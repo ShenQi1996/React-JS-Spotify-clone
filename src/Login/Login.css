@@ -1,6 +1,6 @@
 .Login {
   display: grid;
-  place-items: center;
+  place-items: center; /*display grid and place items center will place in the center*/
   height: 100vh;
   background-color: black;
 }
@@ -15,5 +15,5 @@
   border-radius: 99px;
   font-weight: 800;
   color: white;
-  text-decoration: none;
+  text-decoration: none; /*no under line for the links*/
 }

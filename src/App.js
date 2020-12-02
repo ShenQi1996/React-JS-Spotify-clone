@@ -11,8 +11,7 @@ import { useDataLayerValue } from "./DataLayer/DataLayer";
 const spotify = new SpotifyWebApi();
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [{ user }, dispatch] = useDataLayerValue();
+  const [{ user, token }, dispatch] = useDataLayerValue(); // witch this line I can pull anything out of the datalayer
 
   useEffect(() => {
     const hash = getTokenFromUrl();
@@ -20,26 +19,44 @@ function App() {
     const _token = hash.access_token;
 
     if (_token) {
-      setToken(_token);
+      dispatch({
+        type: "SET_TOKEN",
+        token: _token,
+      });
 
       // give the token to spotify
       spotify.setAccessToken(_token);
 
-      //Test to seee if the token gotten to the spotify API account Info
+      //Test to see if the token gotten to the spotify API account Info
       spotify.getMe().then(user => {
         dispatch({
+          //set the user into the datalayer
           type: "SET_USER",
           user: user,
         });
       });
-    }
 
-    console.log("I have a token 🎶🎶🎶->>", _token);
+      spotify.getUserPlaylists().then(playlists => {
+        dispatch({
+          type: "SET_PLAYLISTS",
+          playlists: playlists,
+        });
+      });
+
+      spotify.getPlaylist("37i9dQZEVXcMsF1EVlL84A").then(response =>
+        dispatch({
+          type: "SET_DISCOVER_WEEKLY",
+          discover_weekly: response,
+        })
+      );
+    }
   }, []);
 
-  console.log("😲😲😲", user);
-
-  return <div className="app">{token ? <Player /> : <Login />}</div>;
+  return (
+    <div className="app">
+      {token ? <Player spotify={spotify} /> : <Login />}
+    </div>
+  );
 }
 
 export default App;
